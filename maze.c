@@ -21,7 +21,7 @@ typedef struct maze {
 	square* squares;
 } maze;
 
-maze *new_maze(width, height) {
+maze *new_maze(int width, int height) {
 	maze* maze = malloc(sizeof(maze));
 	maze->width = width;
 	maze->height = height;
@@ -34,34 +34,34 @@ void free_maze(maze *maze) {
 	free(maze);
 }
 
-void print_maze(maze *maze) {
+void print_maze(maze *maze, FILE *f) {
 	for (int y=0; y < maze->height; y++) {
 		// top border
 		for (int x=0; x < maze->width; x++) {
-			printf("█");
+            fprintf(f, "1");
 			if (maze->squares[maze->width*y +x].borderN) {
-				printf("█");
+                fprintf(f, "1");
 			} else {
-				printf(" ");
+                fprintf(f,"0");
 			}
 		}
-		printf("█\n");
+        fprintf(f, "1\n");
 		// East border and blank for square
 		for (int x=0; x < maze->width; x++) {
 			if (maze->squares[maze->width*y +x].borderE) {
-				printf("█");
+                fprintf(f,"1");
 			} else {
-				printf(" ");
+                fprintf(f,"0");
 			}
-			printf(" ");
+            fprintf(f,"0");
 		}
-		printf("█\n");
+        fprintf(f,"1\n");
 	}
 	// Very bottom border
 	for (int x=0; x < maze->width-1; x++) {
-		printf("██");
+        fprintf(f,"11");
 	}
-	printf("█ █\n");
+    fprintf(f, "101\n");
 }
 
 void remove_maze_boundary(maze *m, int square_a, int square_b) {
@@ -142,9 +142,12 @@ int main(int argc, char **argv) {
 	if (width < 2) width = 10;
 	if (height < 2) height = 10;
 	maze *m = new_maze(width, height);
+    FILE *f = fopen("maze.txt","w");
 	create_passages(m);
-	print_maze(m);
+    fprintf(f,"%d %d\n", width*2+1, height*2+1);
+    print_maze(m, f);
 	free_maze(m);
+    fclose(f);
 	return 0;
 }
 
